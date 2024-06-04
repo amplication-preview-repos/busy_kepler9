@@ -18,25 +18,37 @@ import { TeamService } from "../team.service";
 const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
+  captain: "exampleCaptain",
   createdAt: new Date(),
   id: "exampleId",
+  members: "exampleMembers",
+  name: "exampleName",
   updatedAt: new Date(),
 };
 const CREATE_RESULT = {
+  captain: "exampleCaptain",
   createdAt: new Date(),
   id: "exampleId",
+  members: "exampleMembers",
+  name: "exampleName",
   updatedAt: new Date(),
 };
 const FIND_MANY_RESULT = [
   {
+    captain: "exampleCaptain",
     createdAt: new Date(),
     id: "exampleId",
+    members: "exampleMembers",
+    name: "exampleName",
     updatedAt: new Date(),
   },
 ];
 const FIND_ONE_RESULT = {
+  captain: "exampleCaptain",
   createdAt: new Date(),
   id: "exampleId",
+  members: "exampleMembers",
+  name: "exampleName",
   updatedAt: new Date(),
 };
 

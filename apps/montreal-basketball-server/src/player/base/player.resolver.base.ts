@@ -17,7 +17,11 @@ import { Player } from "./Player";
 import { PlayerCountArgs } from "./PlayerCountArgs";
 import { PlayerFindManyArgs } from "./PlayerFindManyArgs";
 import { PlayerFindUniqueArgs } from "./PlayerFindUniqueArgs";
+import { CreatePlayerArgs } from "./CreatePlayerArgs";
+import { UpdatePlayerArgs } from "./UpdatePlayerArgs";
 import { DeletePlayerArgs } from "./DeletePlayerArgs";
+import { AttendanceFindManyArgs } from "../../attendance/base/AttendanceFindManyArgs";
+import { Attendance } from "../../attendance/base/Attendance";
 import { PlayerService } from "../player.service";
 @graphql.Resolver(() => Player)
 export class PlayerResolverBase {
@@ -49,6 +53,33 @@ export class PlayerResolverBase {
   }
 
   @graphql.Mutation(() => Player)
+  async createPlayer(@graphql.Args() args: CreatePlayerArgs): Promise<Player> {
+    return await this.service.createPlayer({
+      ...args,
+      data: args.data,
+    });
+  }
+
+  @graphql.Mutation(() => Player)
+  async updatePlayer(
+    @graphql.Args() args: UpdatePlayerArgs
+  ): Promise<Player | null> {
+    try {
+      return await this.service.updatePlayer({
+        ...args,
+        data: args.data,
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => Player)
   async deletePlayer(
     @graphql.Args() args: DeletePlayerArgs
   ): Promise<Player | null> {
@@ -62,5 +93,19 @@ export class PlayerResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [Attendance], { name: "attendances" })
+  async findAttendances(
+    @graphql.Parent() parent: Player,
+    @graphql.Args() args: AttendanceFindManyArgs
+  ): Promise<Attendance[]> {
+    const results = await this.service.findAttendances(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
   }
 }

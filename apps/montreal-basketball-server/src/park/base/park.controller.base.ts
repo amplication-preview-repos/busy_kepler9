@@ -22,6 +22,9 @@ import { Park } from "./Park";
 import { ParkFindManyArgs } from "./ParkFindManyArgs";
 import { ParkWhereUniqueInput } from "./ParkWhereUniqueInput";
 import { ParkUpdateInput } from "./ParkUpdateInput";
+import { EventFindManyArgs } from "../../event/base/EventFindManyArgs";
+import { Event } from "../../event/base/Event";
+import { EventWhereUniqueInput } from "../../event/base/EventWhereUniqueInput";
 
 export class ParkControllerBase {
   constructor(protected readonly service: ParkService) {}
@@ -33,6 +36,10 @@ export class ParkControllerBase {
       select: {
         createdAt: true,
         id: true,
+        location: true,
+        name: true,
+        numberOfCourts: true,
+        numberOfPlayers: true,
         updatedAt: true,
       },
     });
@@ -48,6 +55,10 @@ export class ParkControllerBase {
       select: {
         createdAt: true,
         id: true,
+        location: true,
+        name: true,
+        numberOfCourts: true,
+        numberOfPlayers: true,
         updatedAt: true,
       },
     });
@@ -64,6 +75,10 @@ export class ParkControllerBase {
       select: {
         createdAt: true,
         id: true,
+        location: true,
+        name: true,
+        numberOfCourts: true,
+        numberOfPlayers: true,
         updatedAt: true,
       },
     });
@@ -89,6 +104,10 @@ export class ParkControllerBase {
         select: {
           createdAt: true,
           id: true,
+          location: true,
+          name: true,
+          numberOfCourts: true,
+          numberOfPlayers: true,
           updatedAt: true,
         },
       });
@@ -114,6 +133,10 @@ export class ParkControllerBase {
         select: {
           createdAt: true,
           id: true,
+          location: true,
+          name: true,
+          numberOfCourts: true,
+          numberOfPlayers: true,
           updatedAt: true,
         },
       });
@@ -125,5 +148,90 @@ export class ParkControllerBase {
       }
       throw error;
     }
+  }
+
+  @common.Get("/:id/events")
+  @ApiNestedQuery(EventFindManyArgs)
+  async findEvents(
+    @common.Req() request: Request,
+    @common.Param() params: ParkWhereUniqueInput
+  ): Promise<Event[]> {
+    const query = plainToClass(EventFindManyArgs, request.query);
+    const results = await this.service.findEvents(params.id, {
+      ...query,
+      select: {
+        createdAt: true,
+        date: true,
+        description: true,
+        id: true,
+        organizer: true,
+
+        park: {
+          select: {
+            id: true,
+          },
+        },
+
+        title: true,
+        updatedAt: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/events")
+  async connectEvents(
+    @common.Param() params: ParkWhereUniqueInput,
+    @common.Body() body: EventWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      events: {
+        connect: body,
+      },
+    };
+    await this.service.updatePark({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/events")
+  async updateEvents(
+    @common.Param() params: ParkWhereUniqueInput,
+    @common.Body() body: EventWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      events: {
+        set: body,
+      },
+    };
+    await this.service.updatePark({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/events")
+  async disconnectEvents(
+    @common.Param() params: ParkWhereUniqueInput,
+    @common.Body() body: EventWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      events: {
+        disconnect: body,
+      },
+    };
+    await this.service.updatePark({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }

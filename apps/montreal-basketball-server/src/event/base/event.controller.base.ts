@@ -22,6 +22,9 @@ import { Event } from "./Event";
 import { EventFindManyArgs } from "./EventFindManyArgs";
 import { EventWhereUniqueInput } from "./EventWhereUniqueInput";
 import { EventUpdateInput } from "./EventUpdateInput";
+import { AttendanceFindManyArgs } from "../../attendance/base/AttendanceFindManyArgs";
+import { Attendance } from "../../attendance/base/Attendance";
+import { AttendanceWhereUniqueInput } from "../../attendance/base/AttendanceWhereUniqueInput";
 
 export class EventControllerBase {
   constructor(protected readonly service: EventService) {}
@@ -29,10 +32,29 @@ export class EventControllerBase {
   @swagger.ApiCreatedResponse({ type: Event })
   async createEvent(@common.Body() data: EventCreateInput): Promise<Event> {
     return await this.service.createEvent({
-      data: data,
+      data: {
+        ...data,
+
+        park: data.park
+          ? {
+              connect: data.park,
+            }
+          : undefined,
+      },
       select: {
         createdAt: true,
+        date: true,
+        description: true,
         id: true,
+        organizer: true,
+
+        park: {
+          select: {
+            id: true,
+          },
+        },
+
+        title: true,
         updatedAt: true,
       },
     });
@@ -47,7 +69,18 @@ export class EventControllerBase {
       ...args,
       select: {
         createdAt: true,
+        date: true,
+        description: true,
         id: true,
+        organizer: true,
+
+        park: {
+          select: {
+            id: true,
+          },
+        },
+
+        title: true,
         updatedAt: true,
       },
     });
@@ -63,7 +96,18 @@ export class EventControllerBase {
       where: params,
       select: {
         createdAt: true,
+        date: true,
+        description: true,
         id: true,
+        organizer: true,
+
+        park: {
+          select: {
+            id: true,
+          },
+        },
+
+        title: true,
         updatedAt: true,
       },
     });
@@ -85,10 +129,29 @@ export class EventControllerBase {
     try {
       return await this.service.updateEvent({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          park: data.park
+            ? {
+                connect: data.park,
+              }
+            : undefined,
+        },
         select: {
           createdAt: true,
+          date: true,
+          description: true,
           id: true,
+          organizer: true,
+
+          park: {
+            select: {
+              id: true,
+            },
+          },
+
+          title: true,
           updatedAt: true,
         },
       });
@@ -113,7 +176,18 @@ export class EventControllerBase {
         where: params,
         select: {
           createdAt: true,
+          date: true,
+          description: true,
           id: true,
+          organizer: true,
+
+          park: {
+            select: {
+              id: true,
+            },
+          },
+
+          title: true,
           updatedAt: true,
         },
       });
@@ -125,5 +199,94 @@ export class EventControllerBase {
       }
       throw error;
     }
+  }
+
+  @common.Get("/:id/attendances")
+  @ApiNestedQuery(AttendanceFindManyArgs)
+  async findAttendances(
+    @common.Req() request: Request,
+    @common.Param() params: EventWhereUniqueInput
+  ): Promise<Attendance[]> {
+    const query = plainToClass(AttendanceFindManyArgs, request.query);
+    const results = await this.service.findAttendances(params.id, {
+      ...query,
+      select: {
+        createdAt: true,
+
+        event: {
+          select: {
+            id: true,
+          },
+        },
+
+        id: true,
+
+        player: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        updatedAt: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/attendances")
+  async connectAttendances(
+    @common.Param() params: EventWhereUniqueInput,
+    @common.Body() body: AttendanceWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      attendances: {
+        connect: body,
+      },
+    };
+    await this.service.updateEvent({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/attendances")
+  async updateAttendances(
+    @common.Param() params: EventWhereUniqueInput,
+    @common.Body() body: AttendanceWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      attendances: {
+        set: body,
+      },
+    };
+    await this.service.updateEvent({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/attendances")
+  async disconnectAttendances(
+    @common.Param() params: EventWhereUniqueInput,
+    @common.Body() body: AttendanceWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      attendances: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateEvent({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }

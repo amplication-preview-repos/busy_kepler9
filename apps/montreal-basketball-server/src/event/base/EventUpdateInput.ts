@@ -9,5 +9,82 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-class EventUpdateInput {}
+import { InputType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
+import { AttendanceUpdateManyWithoutEventsInput } from "./AttendanceUpdateManyWithoutEventsInput";
+import { ValidateNested, IsOptional, IsDate, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { ParkWhereUniqueInput } from "../../park/base/ParkWhereUniqueInput";
+
+@InputType()
+class EventUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: () => AttendanceUpdateManyWithoutEventsInput,
+  })
+  @ValidateNested()
+  @Type(() => AttendanceUpdateManyWithoutEventsInput)
+  @IsOptional()
+  @Field(() => AttendanceUpdateManyWithoutEventsInput, {
+    nullable: true,
+  })
+  attendances?: AttendanceUpdateManyWithoutEventsInput;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  date?: Date | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  description?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  organizer?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => ParkWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => ParkWhereUniqueInput)
+  @IsOptional()
+  @Field(() => ParkWhereUniqueInput, {
+    nullable: true,
+  })
+  park?: ParkWhereUniqueInput | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  title?: string | null;
+}
+
 export { EventUpdateInput as EventUpdateInput };

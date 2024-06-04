@@ -11,8 +11,17 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString } from "class-validator";
+import {
+  IsDate,
+  ValidateNested,
+  IsOptional,
+  IsString,
+  IsEnum,
+} from "class-validator";
 import { Type } from "class-transformer";
+import { Event } from "../../event/base/Event";
+import { Player } from "../../player/base/Player";
+import { EnumAttendanceStatus } from "./EnumAttendanceStatus";
 
 @ObjectType()
 class Attendance {
@@ -25,12 +34,41 @@ class Attendance {
   createdAt!: Date;
 
   @ApiProperty({
+    required: false,
+    type: () => Event,
+  })
+  @ValidateNested()
+  @Type(() => Event)
+  @IsOptional()
+  event?: Event | null;
+
+  @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
   @Field(() => String)
   id!: string;
+
+  @ApiProperty({
+    required: false,
+    type: () => Player,
+  })
+  @ValidateNested()
+  @Type(() => Player)
+  @IsOptional()
+  player?: Player | null;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumAttendanceStatus,
+  })
+  @IsEnum(EnumAttendanceStatus)
+  @IsOptional()
+  @Field(() => EnumAttendanceStatus, {
+    nullable: true,
+  })
+  status?: "Option1" | null;
 
   @ApiProperty({
     required: true,

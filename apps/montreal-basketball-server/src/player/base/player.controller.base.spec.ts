@@ -18,25 +18,37 @@ import { PlayerService } from "../player.service";
 const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
+  age: 42,
   createdAt: new Date(),
+  email: "exampleEmail",
   id: "exampleId",
+  name: "exampleName",
   updatedAt: new Date(),
 };
 const CREATE_RESULT = {
+  age: 42,
   createdAt: new Date(),
+  email: "exampleEmail",
   id: "exampleId",
+  name: "exampleName",
   updatedAt: new Date(),
 };
 const FIND_MANY_RESULT = [
   {
+    age: 42,
     createdAt: new Date(),
+    email: "exampleEmail",
     id: "exampleId",
+    name: "exampleName",
     updatedAt: new Date(),
   },
 ];
 const FIND_ONE_RESULT = {
+  age: 42,
   createdAt: new Date(),
+  email: "exampleEmail",
   id: "exampleId",
+  name: "exampleName",
   updatedAt: new Date(),
 };
 

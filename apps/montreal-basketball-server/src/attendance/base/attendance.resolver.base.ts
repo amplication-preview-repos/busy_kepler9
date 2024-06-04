@@ -17,7 +17,11 @@ import { Attendance } from "./Attendance";
 import { AttendanceCountArgs } from "./AttendanceCountArgs";
 import { AttendanceFindManyArgs } from "./AttendanceFindManyArgs";
 import { AttendanceFindUniqueArgs } from "./AttendanceFindUniqueArgs";
+import { CreateAttendanceArgs } from "./CreateAttendanceArgs";
+import { UpdateAttendanceArgs } from "./UpdateAttendanceArgs";
 import { DeleteAttendanceArgs } from "./DeleteAttendanceArgs";
+import { Event } from "../../event/base/Event";
+import { Player } from "../../player/base/Player";
 import { AttendanceService } from "../attendance.service";
 @graphql.Resolver(() => Attendance)
 export class AttendanceResolverBase {
@@ -51,6 +55,63 @@ export class AttendanceResolverBase {
   }
 
   @graphql.Mutation(() => Attendance)
+  async createAttendance(
+    @graphql.Args() args: CreateAttendanceArgs
+  ): Promise<Attendance> {
+    return await this.service.createAttendance({
+      ...args,
+      data: {
+        ...args.data,
+
+        event: args.data.event
+          ? {
+              connect: args.data.event,
+            }
+          : undefined,
+
+        player: args.data.player
+          ? {
+              connect: args.data.player,
+            }
+          : undefined,
+      },
+    });
+  }
+
+  @graphql.Mutation(() => Attendance)
+  async updateAttendance(
+    @graphql.Args() args: UpdateAttendanceArgs
+  ): Promise<Attendance | null> {
+    try {
+      return await this.service.updateAttendance({
+        ...args,
+        data: {
+          ...args.data,
+
+          event: args.data.event
+            ? {
+                connect: args.data.event,
+              }
+            : undefined,
+
+          player: args.data.player
+            ? {
+                connect: args.data.player,
+              }
+            : undefined,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => Attendance)
   async deleteAttendance(
     @graphql.Args() args: DeleteAttendanceArgs
   ): Promise<Attendance | null> {
@@ -64,5 +125,33 @@ export class AttendanceResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => Event, {
+    nullable: true,
+    name: "event",
+  })
+  async getEvent(@graphql.Parent() parent: Attendance): Promise<Event | null> {
+    const result = await this.service.getEvent(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
+  }
+
+  @graphql.ResolveField(() => Player, {
+    nullable: true,
+    name: "player",
+  })
+  async getPlayer(
+    @graphql.Parent() parent: Attendance
+  ): Promise<Player | null> {
+    const result = await this.service.getPlayer(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }

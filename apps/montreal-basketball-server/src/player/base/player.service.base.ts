@@ -10,7 +10,11 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Player as PrismaPlayer } from "@prisma/client";
+import {
+  Prisma,
+  Player as PrismaPlayer,
+  Attendance as PrismaAttendance,
+} from "@prisma/client";
 
 export class PlayerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -43,5 +47,16 @@ export class PlayerServiceBase {
     args: Prisma.SelectSubset<T, Prisma.PlayerDeleteArgs>
   ): Promise<PrismaPlayer> {
     return this.prisma.player.delete(args);
+  }
+
+  async findAttendances(
+    parentId: string,
+    args: Prisma.AttendanceFindManyArgs
+  ): Promise<PrismaAttendance[]> {
+    return this.prisma.player
+      .findUniqueOrThrow({
+        where: { id: parentId },
+      })
+      .attendances(args);
   }
 }

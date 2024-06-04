@@ -11,12 +11,63 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StringFilter } from "../../util/StringFilter";
+import { IntNullableFilter } from "../../util/IntNullableFilter";
 import { Type } from "class-transformer";
-import { IsOptional } from "class-validator";
+import { IsOptional, ValidateNested, IsEnum } from "class-validator";
+import { AttendanceListRelationFilter } from "../../attendance/base/AttendanceListRelationFilter";
+import { EnumPlayerCurrentStatus } from "./EnumPlayerCurrentStatus";
+import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { StringFilter } from "../../util/StringFilter";
+import { JsonFilter } from "../../util/JsonFilter";
+import { EnumPlayerSkillLevel } from "./EnumPlayerSkillLevel";
 
 @InputType()
 class PlayerWhereInput {
+  @ApiProperty({
+    required: false,
+    type: IntNullableFilter,
+  })
+  @Type(() => IntNullableFilter)
+  @IsOptional()
+  @Field(() => IntNullableFilter, {
+    nullable: true,
+  })
+  age?: IntNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => AttendanceListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => AttendanceListRelationFilter)
+  @IsOptional()
+  @Field(() => AttendanceListRelationFilter, {
+    nullable: true,
+  })
+  attendances?: AttendanceListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumPlayerCurrentStatus,
+  })
+  @IsEnum(EnumPlayerCurrentStatus)
+  @IsOptional()
+  @Field(() => EnumPlayerCurrentStatus, {
+    nullable: true,
+  })
+  currentStatus?: "Option1";
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  email?: StringNullableFilter;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
@@ -27,6 +78,39 @@ class PlayerWhereInput {
     nullable: true,
   })
   id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: JsonFilter,
+  })
+  @Type(() => JsonFilter)
+  @IsOptional()
+  @Field(() => JsonFilter, {
+    nullable: true,
+  })
+  location?: JsonFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  name?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumPlayerSkillLevel,
+  })
+  @IsEnum(EnumPlayerSkillLevel)
+  @IsOptional()
+  @Field(() => EnumPlayerSkillLevel, {
+    nullable: true,
+  })
+  skillLevel?: "Option1";
 }
 
 export { PlayerWhereInput as PlayerWhereInput };

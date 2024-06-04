@@ -31,10 +31,39 @@ export class AttendanceControllerBase {
     @common.Body() data: AttendanceCreateInput
   ): Promise<Attendance> {
     return await this.service.createAttendance({
-      data: data,
+      data: {
+        ...data,
+
+        event: data.event
+          ? {
+              connect: data.event,
+            }
+          : undefined,
+
+        player: data.player
+          ? {
+              connect: data.player,
+            }
+          : undefined,
+      },
       select: {
         createdAt: true,
+
+        event: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
+
+        player: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
         updatedAt: true,
       },
     });
@@ -49,7 +78,22 @@ export class AttendanceControllerBase {
       ...args,
       select: {
         createdAt: true,
+
+        event: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
+
+        player: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
         updatedAt: true,
       },
     });
@@ -65,7 +109,22 @@ export class AttendanceControllerBase {
       where: params,
       select: {
         createdAt: true,
+
+        event: {
+          select: {
+            id: true,
+          },
+        },
+
         id: true,
+
+        player: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
         updatedAt: true,
       },
     });
@@ -87,10 +146,39 @@ export class AttendanceControllerBase {
     try {
       return await this.service.updateAttendance({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          event: data.event
+            ? {
+                connect: data.event,
+              }
+            : undefined,
+
+          player: data.player
+            ? {
+                connect: data.player,
+              }
+            : undefined,
+        },
         select: {
           createdAt: true,
+
+          event: {
+            select: {
+              id: true,
+            },
+          },
+
           id: true,
+
+          player: {
+            select: {
+              id: true,
+            },
+          },
+
+          status: true,
           updatedAt: true,
         },
       });
@@ -115,7 +203,22 @@ export class AttendanceControllerBase {
         where: params,
         select: {
           createdAt: true,
+
+          event: {
+            select: {
+              id: true,
+            },
+          },
+
           id: true,
+
+          player: {
+            select: {
+              id: true,
+            },
+          },
+
+          status: true,
           updatedAt: true,
         },
       });

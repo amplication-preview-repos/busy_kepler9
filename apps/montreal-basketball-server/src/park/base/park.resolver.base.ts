@@ -17,7 +17,11 @@ import { Park } from "./Park";
 import { ParkCountArgs } from "./ParkCountArgs";
 import { ParkFindManyArgs } from "./ParkFindManyArgs";
 import { ParkFindUniqueArgs } from "./ParkFindUniqueArgs";
+import { CreateParkArgs } from "./CreateParkArgs";
+import { UpdateParkArgs } from "./UpdateParkArgs";
 import { DeleteParkArgs } from "./DeleteParkArgs";
+import { EventFindManyArgs } from "../../event/base/EventFindManyArgs";
+import { Event } from "../../event/base/Event";
 import { ParkService } from "../park.service";
 @graphql.Resolver(() => Park)
 export class ParkResolverBase {
@@ -47,6 +51,31 @@ export class ParkResolverBase {
   }
 
   @graphql.Mutation(() => Park)
+  async createPark(@graphql.Args() args: CreateParkArgs): Promise<Park> {
+    return await this.service.createPark({
+      ...args,
+      data: args.data,
+    });
+  }
+
+  @graphql.Mutation(() => Park)
+  async updatePark(@graphql.Args() args: UpdateParkArgs): Promise<Park | null> {
+    try {
+      return await this.service.updatePark({
+        ...args,
+        data: args.data,
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => Park)
   async deletePark(@graphql.Args() args: DeleteParkArgs): Promise<Park | null> {
     try {
       return await this.service.deletePark(args);
@@ -58,5 +87,19 @@ export class ParkResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [Event], { name: "events" })
+  async findEvents(
+    @graphql.Parent() parent: Park,
+    @graphql.Args() args: EventFindManyArgs
+  ): Promise<Event[]> {
+    const results = await this.service.findEvents(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
   }
 }

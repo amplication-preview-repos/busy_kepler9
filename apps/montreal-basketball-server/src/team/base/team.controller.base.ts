@@ -31,8 +31,11 @@ export class TeamControllerBase {
     return await this.service.createTeam({
       data: data,
       select: {
+        captain: true,
         createdAt: true,
         id: true,
+        members: true,
+        name: true,
         updatedAt: true,
       },
     });
@@ -46,8 +49,11 @@ export class TeamControllerBase {
     return this.service.teams({
       ...args,
       select: {
+        captain: true,
         createdAt: true,
         id: true,
+        members: true,
+        name: true,
         updatedAt: true,
       },
     });
@@ -62,8 +68,11 @@ export class TeamControllerBase {
     const result = await this.service.team({
       where: params,
       select: {
+        captain: true,
         createdAt: true,
         id: true,
+        members: true,
+        name: true,
         updatedAt: true,
       },
     });
@@ -87,8 +96,11 @@ export class TeamControllerBase {
         where: params,
         data: data,
         select: {
+          captain: true,
           createdAt: true,
           id: true,
+          members: true,
+          name: true,
           updatedAt: true,
         },
       });
@@ -112,8 +124,11 @@ export class TeamControllerBase {
       return await this.service.deleteTeam({
         where: params,
         select: {
+          captain: true,
           createdAt: true,
           id: true,
+          members: true,
+          name: true,
           updatedAt: true,
         },
       });

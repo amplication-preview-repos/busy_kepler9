@@ -22,6 +22,9 @@ import { Player } from "./Player";
 import { PlayerFindManyArgs } from "./PlayerFindManyArgs";
 import { PlayerWhereUniqueInput } from "./PlayerWhereUniqueInput";
 import { PlayerUpdateInput } from "./PlayerUpdateInput";
+import { AttendanceFindManyArgs } from "../../attendance/base/AttendanceFindManyArgs";
+import { Attendance } from "../../attendance/base/Attendance";
+import { AttendanceWhereUniqueInput } from "../../attendance/base/AttendanceWhereUniqueInput";
 
 export class PlayerControllerBase {
   constructor(protected readonly service: PlayerService) {}
@@ -31,8 +34,14 @@ export class PlayerControllerBase {
     return await this.service.createPlayer({
       data: data,
       select: {
+        age: true,
         createdAt: true,
+        currentStatus: true,
+        email: true,
         id: true,
+        location: true,
+        name: true,
+        skillLevel: true,
         updatedAt: true,
       },
     });
@@ -46,8 +55,14 @@ export class PlayerControllerBase {
     return this.service.players({
       ...args,
       select: {
+        age: true,
         createdAt: true,
+        currentStatus: true,
+        email: true,
         id: true,
+        location: true,
+        name: true,
+        skillLevel: true,
         updatedAt: true,
       },
     });
@@ -62,8 +77,14 @@ export class PlayerControllerBase {
     const result = await this.service.player({
       where: params,
       select: {
+        age: true,
         createdAt: true,
+        currentStatus: true,
+        email: true,
         id: true,
+        location: true,
+        name: true,
+        skillLevel: true,
         updatedAt: true,
       },
     });
@@ -87,8 +108,14 @@ export class PlayerControllerBase {
         where: params,
         data: data,
         select: {
+          age: true,
           createdAt: true,
+          currentStatus: true,
+          email: true,
           id: true,
+          location: true,
+          name: true,
+          skillLevel: true,
           updatedAt: true,
         },
       });
@@ -112,8 +139,14 @@ export class PlayerControllerBase {
       return await this.service.deletePlayer({
         where: params,
         select: {
+          age: true,
           createdAt: true,
+          currentStatus: true,
+          email: true,
           id: true,
+          location: true,
+          name: true,
+          skillLevel: true,
           updatedAt: true,
         },
       });
@@ -125,5 +158,94 @@ export class PlayerControllerBase {
       }
       throw error;
     }
+  }
+
+  @common.Get("/:id/attendances")
+  @ApiNestedQuery(AttendanceFindManyArgs)
+  async findAttendances(
+    @common.Req() request: Request,
+    @common.Param() params: PlayerWhereUniqueInput
+  ): Promise<Attendance[]> {
+    const query = plainToClass(AttendanceFindManyArgs, request.query);
+    const results = await this.service.findAttendances(params.id, {
+      ...query,
+      select: {
+        createdAt: true,
+
+        event: {
+          select: {
+            id: true,
+          },
+        },
+
+        id: true,
+
+        player: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        updatedAt: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/attendances")
+  async connectAttendances(
+    @common.Param() params: PlayerWhereUniqueInput,
+    @common.Body() body: AttendanceWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      attendances: {
+        connect: body,
+      },
+    };
+    await this.service.updatePlayer({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/attendances")
+  async updateAttendances(
+    @common.Param() params: PlayerWhereUniqueInput,
+    @common.Body() body: AttendanceWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      attendances: {
+        set: body,
+      },
+    };
+    await this.service.updatePlayer({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/attendances")
+  async disconnectAttendances(
+    @common.Param() params: PlayerWhereUniqueInput,
+    @common.Body() body: AttendanceWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      attendances: {
+        disconnect: body,
+      },
+    };
+    await this.service.updatePlayer({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }

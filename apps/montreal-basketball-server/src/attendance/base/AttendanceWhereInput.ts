@@ -11,12 +11,27 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StringFilter } from "../../util/StringFilter";
+import { EventWhereUniqueInput } from "../../event/base/EventWhereUniqueInput";
+import { ValidateNested, IsOptional, IsEnum } from "class-validator";
 import { Type } from "class-transformer";
-import { IsOptional } from "class-validator";
+import { StringFilter } from "../../util/StringFilter";
+import { PlayerWhereUniqueInput } from "../../player/base/PlayerWhereUniqueInput";
+import { EnumAttendanceStatus } from "./EnumAttendanceStatus";
 
 @InputType()
 class AttendanceWhereInput {
+  @ApiProperty({
+    required: false,
+    type: () => EventWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => EventWhereUniqueInput)
+  @IsOptional()
+  @Field(() => EventWhereUniqueInput, {
+    nullable: true,
+  })
+  event?: EventWhereUniqueInput;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
@@ -27,6 +42,29 @@ class AttendanceWhereInput {
     nullable: true,
   })
   id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => PlayerWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => PlayerWhereUniqueInput)
+  @IsOptional()
+  @Field(() => PlayerWhereUniqueInput, {
+    nullable: true,
+  })
+  player?: PlayerWhereUniqueInput;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumAttendanceStatus,
+  })
+  @IsEnum(EnumAttendanceStatus)
+  @IsOptional()
+  @Field(() => EnumAttendanceStatus, {
+    nullable: true,
+  })
+  status?: "Option1";
 }
 
 export { AttendanceWhereInput as AttendanceWhereInput };

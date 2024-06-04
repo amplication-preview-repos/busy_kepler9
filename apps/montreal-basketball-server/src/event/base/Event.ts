@@ -11,11 +11,22 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString } from "class-validator";
+import { Attendance } from "../../attendance/base/Attendance";
+import { ValidateNested, IsOptional, IsDate, IsString } from "class-validator";
 import { Type } from "class-transformer";
+import { Park } from "../../park/base/Park";
 
 @ObjectType()
 class Event {
+  @ApiProperty({
+    required: false,
+    type: () => [Attendance],
+  })
+  @ValidateNested()
+  @Type(() => Attendance)
+  @IsOptional()
+  attendances?: Array<Attendance>;
+
   @ApiProperty({
     required: true,
   })
@@ -25,12 +36,65 @@ class Event {
   createdAt!: Date;
 
   @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  date!: Date | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  description!: string | null;
+
+  @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
   @Field(() => String)
   id!: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  organizer!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => Park,
+  })
+  @ValidateNested()
+  @Type(() => Park)
+  @IsOptional()
+  park?: Park | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  title!: string | null;
 
   @ApiProperty({
     required: true,

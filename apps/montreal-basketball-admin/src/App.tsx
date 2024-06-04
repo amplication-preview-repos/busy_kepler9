@@ -9,14 +9,14 @@ import { PlayerList } from "./player/PlayerList";
 import { PlayerCreate } from "./player/PlayerCreate";
 import { PlayerEdit } from "./player/PlayerEdit";
 import { PlayerShow } from "./player/PlayerShow";
-import { EventList } from "./event/EventList";
-import { EventCreate } from "./event/EventCreate";
-import { EventEdit } from "./event/EventEdit";
-import { EventShow } from "./event/EventShow";
 import { ParkList } from "./park/ParkList";
 import { ParkCreate } from "./park/ParkCreate";
 import { ParkEdit } from "./park/ParkEdit";
 import { ParkShow } from "./park/ParkShow";
+import { EventList } from "./event/EventList";
+import { EventCreate } from "./event/EventCreate";
+import { EventEdit } from "./event/EventEdit";
+import { EventShow } from "./event/EventShow";
 import { AttendanceList } from "./attendance/AttendanceList";
 import { AttendanceCreate } from "./attendance/AttendanceCreate";
 import { AttendanceEdit } from "./attendance/AttendanceEdit";
@@ -59,18 +59,18 @@ const App = (): React.ReactElement => {
           show={PlayerShow}
         />
         <Resource
-          name="Event"
-          list={EventList}
-          edit={EventEdit}
-          create={EventCreate}
-          show={EventShow}
-        />
-        <Resource
           name="Park"
           list={ParkList}
           edit={ParkEdit}
           create={ParkCreate}
           show={ParkShow}
+        />
+        <Resource
+          name="Event"
+          list={EventList}
+          edit={EventEdit}
+          create={EventCreate}
+          show={EventShow}
         />
         <Resource
           name="Attendance"

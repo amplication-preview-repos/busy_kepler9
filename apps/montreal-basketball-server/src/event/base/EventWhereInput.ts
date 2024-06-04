@@ -11,12 +11,50 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { StringFilter } from "../../util/StringFilter";
+import { AttendanceListRelationFilter } from "../../attendance/base/AttendanceListRelationFilter";
+import { ValidateNested, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
-import { IsOptional } from "class-validator";
+import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
+import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { StringFilter } from "../../util/StringFilter";
+import { ParkWhereUniqueInput } from "../../park/base/ParkWhereUniqueInput";
 
 @InputType()
 class EventWhereInput {
+  @ApiProperty({
+    required: false,
+    type: () => AttendanceListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => AttendanceListRelationFilter)
+  @IsOptional()
+  @Field(() => AttendanceListRelationFilter, {
+    nullable: true,
+  })
+  attendances?: AttendanceListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeNullableFilter,
+  })
+  @Type(() => DateTimeNullableFilter)
+  @IsOptional()
+  @Field(() => DateTimeNullableFilter, {
+    nullable: true,
+  })
+  date?: DateTimeNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  description?: StringNullableFilter;
+
   @ApiProperty({
     required: false,
     type: StringFilter,
@@ -27,6 +65,40 @@ class EventWhereInput {
     nullable: true,
   })
   id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  organizer?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => ParkWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => ParkWhereUniqueInput)
+  @IsOptional()
+  @Field(() => ParkWhereUniqueInput, {
+    nullable: true,
+  })
+  park?: ParkWhereUniqueInput;
+
+  @ApiProperty({
+    required: false,
+    type: StringNullableFilter,
+  })
+  @Type(() => StringNullableFilter)
+  @IsOptional()
+  @Field(() => StringNullableFilter, {
+    nullable: true,
+  })
+  title?: StringNullableFilter;
 }
 
 export { EventWhereInput as EventWhereInput };

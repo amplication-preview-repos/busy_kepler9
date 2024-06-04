@@ -11,11 +11,44 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString } from "class-validator";
+import {
+  IsInt,
+  IsOptional,
+  ValidateNested,
+  IsDate,
+  IsEnum,
+  IsString,
+} from "class-validator";
+import { Attendance } from "../../attendance/base/Attendance";
 import { Type } from "class-transformer";
+import { EnumPlayerCurrentStatus } from "./EnumPlayerCurrentStatus";
+import { IsJSONValue } from "../../validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { JsonValue } from "type-fest";
+import { EnumPlayerSkillLevel } from "./EnumPlayerSkillLevel";
 
 @ObjectType()
 class Player {
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  age!: number | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => [Attendance],
+  })
+  @ValidateNested()
+  @Type(() => Attendance)
+  @IsOptional()
+  attendances?: Array<Attendance>;
+
   @ApiProperty({
     required: true,
   })
@@ -25,12 +58,66 @@ class Player {
   createdAt!: Date;
 
   @ApiProperty({
+    required: false,
+    enum: EnumPlayerCurrentStatus,
+  })
+  @IsEnum(EnumPlayerCurrentStatus)
+  @IsOptional()
+  @Field(() => EnumPlayerCurrentStatus, {
+    nullable: true,
+  })
+  currentStatus?: "Option1" | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  email!: string | null;
+
+  @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
   @Field(() => String)
   id!: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsJSONValue()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  location!: JsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  name!: string | null;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumPlayerSkillLevel,
+  })
+  @IsEnum(EnumPlayerSkillLevel)
+  @IsOptional()
+  @Field(() => EnumPlayerSkillLevel, {
+    nullable: true,
+  })
+  skillLevel?: "Option1" | null;
 
   @ApiProperty({
     required: true,

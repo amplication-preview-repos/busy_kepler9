@@ -17,7 +17,12 @@ import { Event } from "./Event";
 import { EventCountArgs } from "./EventCountArgs";
 import { EventFindManyArgs } from "./EventFindManyArgs";
 import { EventFindUniqueArgs } from "./EventFindUniqueArgs";
+import { CreateEventArgs } from "./CreateEventArgs";
+import { UpdateEventArgs } from "./UpdateEventArgs";
 import { DeleteEventArgs } from "./DeleteEventArgs";
+import { AttendanceFindManyArgs } from "../../attendance/base/AttendanceFindManyArgs";
+import { Attendance } from "../../attendance/base/Attendance";
+import { Park } from "../../park/base/Park";
 import { EventService } from "../event.service";
 @graphql.Resolver(() => Event)
 export class EventResolverBase {
@@ -49,6 +54,49 @@ export class EventResolverBase {
   }
 
   @graphql.Mutation(() => Event)
+  async createEvent(@graphql.Args() args: CreateEventArgs): Promise<Event> {
+    return await this.service.createEvent({
+      ...args,
+      data: {
+        ...args.data,
+
+        park: args.data.park
+          ? {
+              connect: args.data.park,
+            }
+          : undefined,
+      },
+    });
+  }
+
+  @graphql.Mutation(() => Event)
+  async updateEvent(
+    @graphql.Args() args: UpdateEventArgs
+  ): Promise<Event | null> {
+    try {
+      return await this.service.updateEvent({
+        ...args,
+        data: {
+          ...args.data,
+
+          park: args.data.park
+            ? {
+                connect: args.data.park,
+              }
+            : undefined,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => Event)
   async deleteEvent(
     @graphql.Args() args: DeleteEventArgs
   ): Promise<Event | null> {
@@ -62,5 +110,32 @@ export class EventResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [Attendance], { name: "attendances" })
+  async findAttendances(
+    @graphql.Parent() parent: Event,
+    @graphql.Args() args: AttendanceFindManyArgs
+  ): Promise<Attendance[]> {
+    const results = await this.service.findAttendances(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @graphql.ResolveField(() => Park, {
+    nullable: true,
+    name: "park",
+  })
+  async getPark(@graphql.Parent() parent: Event): Promise<Park | null> {
+    const result = await this.service.getPark(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }

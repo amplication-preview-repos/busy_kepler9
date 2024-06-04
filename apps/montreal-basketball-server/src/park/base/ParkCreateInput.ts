@@ -9,5 +9,71 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-class ParkCreateInput {}
+import { InputType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
+import { EventCreateNestedManyWithoutParksInput } from "./EventCreateNestedManyWithoutParksInput";
+import { ValidateNested, IsOptional, IsString, IsInt } from "class-validator";
+import { Type } from "class-transformer";
+import { IsJSONValue } from "../../validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { InputJsonValue } from "../../types";
+
+@InputType()
+class ParkCreateInput {
+  @ApiProperty({
+    required: false,
+    type: () => EventCreateNestedManyWithoutParksInput,
+  })
+  @ValidateNested()
+  @Type(() => EventCreateNestedManyWithoutParksInput)
+  @IsOptional()
+  @Field(() => EventCreateNestedManyWithoutParksInput, {
+    nullable: true,
+  })
+  events?: EventCreateNestedManyWithoutParksInput;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsJSONValue()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  location?: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  name?: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  numberOfCourts?: number | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  numberOfPlayers?: number | null;
+}
+
 export { ParkCreateInput as ParkCreateInput };

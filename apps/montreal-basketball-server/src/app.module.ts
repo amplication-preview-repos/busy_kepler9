@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { PlayerModule } from "./player/player.module";
-import { EventModule } from "./event/event.module";
 import { ParkModule } from "./park/park.module";
+import { EventModule } from "./event/event.module";
 import { AttendanceModule } from "./attendance/attendance.module";
 import { TeamModule } from "./team/team.module";
 import { HealthModule } from "./health/health.module";
@@ -17,8 +17,8 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
   controllers: [],
   imports: [
     PlayerModule,
-    EventModule,
     ParkModule,
+    EventModule,
     AttendanceModule,
     TeamModule,
     HealthModule,

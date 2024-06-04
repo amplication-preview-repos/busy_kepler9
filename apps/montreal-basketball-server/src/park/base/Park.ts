@@ -11,8 +11,18 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString } from "class-validator";
+import {
+  IsDate,
+  ValidateNested,
+  IsOptional,
+  IsString,
+  IsInt,
+} from "class-validator";
 import { Type } from "class-transformer";
+import { Event } from "../../event/base/Event";
+import { IsJSONValue } from "../../validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { JsonValue } from "type-fest";
 
 @ObjectType()
 class Park {
@@ -25,12 +35,64 @@ class Park {
   createdAt!: Date;
 
   @ApiProperty({
+    required: false,
+    type: () => [Event],
+  })
+  @ValidateNested()
+  @Type(() => Event)
+  @IsOptional()
+  events?: Array<Event>;
+
+  @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
   @Field(() => String)
   id!: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsJSONValue()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  location!: JsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  name!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  numberOfCourts!: number | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsInt()
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  numberOfPlayers!: number | null;
 
   @ApiProperty({
     required: true,

@@ -17,6 +17,8 @@ import { Team } from "./Team";
 import { TeamCountArgs } from "./TeamCountArgs";
 import { TeamFindManyArgs } from "./TeamFindManyArgs";
 import { TeamFindUniqueArgs } from "./TeamFindUniqueArgs";
+import { CreateTeamArgs } from "./CreateTeamArgs";
+import { UpdateTeamArgs } from "./UpdateTeamArgs";
 import { DeleteTeamArgs } from "./DeleteTeamArgs";
 import { TeamService } from "../team.service";
 @graphql.Resolver(() => Team)
@@ -44,6 +46,31 @@ export class TeamResolverBase {
       return null;
     }
     return result;
+  }
+
+  @graphql.Mutation(() => Team)
+  async createTeam(@graphql.Args() args: CreateTeamArgs): Promise<Team> {
+    return await this.service.createTeam({
+      ...args,
+      data: args.data,
+    });
+  }
+
+  @graphql.Mutation(() => Team)
+  async updateTeam(@graphql.Args() args: UpdateTeamArgs): Promise<Team | null> {
+    try {
+      return await this.service.updateTeam({
+        ...args,
+        data: args.data,
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
   }
 
   @graphql.Mutation(() => Team)

@@ -14,6 +14,10 @@ export const ParkList = (props: ListProps): React.ReactElement => {
       <Datagrid rowClick="show">
         <DateField source="createdAt" label="Created At" />
         <TextField label="ID" source="id" />
+        <TextField label="Location" source="location" />
+        <TextField label="Name" source="name" />
+        <TextField label="Number of Courts" source="numberOfCourts" />
+        <TextField label="Number of Players" source="numberOfPlayers" />
         <DateField source="updatedAt" label="Updated At" />
       </Datagrid>
     </List>
