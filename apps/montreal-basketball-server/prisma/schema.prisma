@@ -1,0 +1,77 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Player {
+  age           Int?
+  attendances   Attendance[]
+  createdAt     DateTime                 @default(now())
+  currentStatus EnumPlayerCurrentStatus?
+  email         String?
+  id            String                   @id @default(cuid())
+  location      Json?
+  name          String?
+  skillLevel    EnumPlayerSkillLevel?
+  updatedAt     DateTime                 @updatedAt
+}
+
+model Park {
+  createdAt       DateTime @default(now())
+  events          Event[]
+  id              String   @id @default(cuid())
+  location        Json?
+  name            String?
+  numberOfCourts  Int?
+  numberOfPlayers Int?
+  updatedAt       DateTime @updatedAt
+}
+
+model Event {
+  attendances Attendance[]
+  createdAt   DateTime     @default(now())
+  date        DateTime?
+  description String?
+  id          String       @id @default(cuid())
+  organizer   String?
+  park        Park?        @relation(fields: [parkId], references: [id])
+  parkId      String?
+  title       String?
+  updatedAt   DateTime     @updatedAt
+}
+
+model Attendance {
+  createdAt DateTime              @default(now())
+  event     Event?                @relation(fields: [eventId], references: [id])
+  eventId   String?
+  id        String                @id @default(cuid())
+  player    Player?               @relation(fields: [playerId], references: [id])
+  playerId  String?
+  status    EnumAttendanceStatus?
+  updatedAt DateTime              @updatedAt
+}
+
+model Team {
+  captain   String?
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  members   String?
+  name      String?
+  updatedAt DateTime @updatedAt
+}
+
+enum EnumPlayerCurrentStatus {
+  Option1
+}
+
+enum EnumPlayerSkillLevel {
+  Option1
+}
+
+enum EnumAttendanceStatus {
+  Option1
+}
